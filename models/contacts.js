@@ -1,11 +1,12 @@
 // declaration of variables
 const fs = require("fs").promises;
 const path = require("path");
+const { Contact } = require("../db/connectionSchema");
 const contactsPath = path.resolve("../models/contacts.json");
 
 // function get contact list
 const listContacts = async () => {
-  const data = await fs.readFile(contactsPath, "utf8");
+  const data = await Contact.find({});
   return JSON.parse(data);
 };
 
