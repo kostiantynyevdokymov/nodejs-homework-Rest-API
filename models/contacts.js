@@ -7,6 +7,7 @@ const contactsPath = path.resolve("../models/contacts.json");
 // function get contact list
 const listContacts = async () => {
   const data = await Contact.find({});
+  console.log(process.env.MONGO_URL);
   return JSON.parse(data);
 };
 
