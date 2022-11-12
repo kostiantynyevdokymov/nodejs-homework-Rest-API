@@ -9,6 +9,7 @@ module.exports = {
         .email({ minDomainSegment: 2, tlds: { allow: ["com", "net"] } })
         .required(),
       phone: Joi.number().required(),
+      favorite: Joi.bool().optional(),
     });
 
     const validationResult = schema.validate(req.body);
@@ -17,6 +18,7 @@ module.exports = {
     }
     next();
   },
+
   // function validate changes contact
   putContactValidation: (req, res, next) => {
     const schema = Joi.object({
@@ -25,7 +27,17 @@ module.exports = {
         .email({ minDomainSegment: 2, tlds: { allow: ["com", "net"] } })
         .optional(),
       phone: Joi.number().optional(),
+      favorite: Joi.bool().optional(),
     });
+    const validationResult = schema.validate(req.body);
+    if (validationResult.error) {
+      return res.status(400).json({ message: validationResult.error });
+    }
+    next();
+  },
+  patchContactFavoriteValidation: (req, res, next) => {
+    const schema = Joi.object({ favorite: Joi.bool().required() });
+
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
       return res.status(400).json({ message: validationResult.error });

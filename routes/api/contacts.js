@@ -11,6 +11,7 @@ const {
 const {
   addContactValidation,
   putContactValidation,
+  patchContactFavoriteValidation,
 } = require("../../middlewares/validationMiddlevare");
 
 const { validId } = require("../../middlewares/validationIdMiddleware");
@@ -94,21 +95,26 @@ router.put(
   }
 );
 
-router.patch("/:contactId/favorite", validId, async (req, res) => {
-  const { favorite } = req.body;
-  const { contactId } = req.params;
-  if (Object.keys(req.body).length === 0) {
-    return res.status(400).json({ message: "missing field favorite" });
-  }
-  try {
-    const updatedContact = await updateStatusContact(contactId, favorite);
-    if (!updateContact) {
-      res.status(400).json({ message: "Not found" });
-      return;
+router.patch(
+  "/:contactId/favorite",
+  validId,
+  patchContactFavoriteValidation,
+  async (req, res) => {
+    const { favorite } = req.body;
+    const { contactId } = req.params;
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "missing field favorite" });
     }
-    res.status(200).json({ message: "success", contact: updatedContact });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    try {
+      const updatedContact = await updateStatusContact(contactId, favorite);
+      if (!updateContact) {
+        res.status(400).json({ message: "Not found" });
+        return;
+      }
+      res.status(200).json({ message: "success", contact: updatedContact });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
-});
+);
 module.exports = router;
