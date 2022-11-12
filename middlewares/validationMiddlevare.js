@@ -29,12 +29,14 @@ module.exports = {
       phone: Joi.number().optional(),
       favorite: Joi.bool().optional(),
     });
+
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
       return res.status(400).json({ message: validationResult.error });
     }
     next();
   },
+
   patchContactFavoriteValidation: (req, res, next) => {
     const schema = Joi.object({ favorite: Joi.bool().required() });
 
