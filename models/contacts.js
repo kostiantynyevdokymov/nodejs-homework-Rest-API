@@ -5,14 +5,12 @@ const { Contact } = require("../db/connectionSchema");
 // function get contact list
 const listContacts = async () => {
   const data = await Contact.find({});
-  console.log(process.env.MONGO_URL);
-  return JSON.parse(data);
+  return data;
 };
 
 // function get contact by ID
 const getContactById = async (contactId) => {
   const data = await Contact.findById(contactId);
-
   return data;
 };
 

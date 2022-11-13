@@ -16,5 +16,4 @@ const startConnect = async () => {
     console.log(error);
   }
 };
-
-module.exports = { startConnect };
+startConnect();
