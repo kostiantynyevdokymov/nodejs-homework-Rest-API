@@ -8,7 +8,7 @@ const { connectMongo } = require("./db/connection");
 
 const startConnect = async () => {
   try {
-    connectMongo();
+    await connectMongo();
     app.listen(PORT, () => {
       console.log(`Server running. Use our API on port: ${PORT}`);
     });
