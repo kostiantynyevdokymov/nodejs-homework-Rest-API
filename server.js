@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 const { connectMongo } = require("./db/connection");
 
-const startConnect = async () => {
+const start = async () => {
   try {
     await connectMongo();
     app.listen(PORT, () => {
@@ -16,4 +16,5 @@ const startConnect = async () => {
     console.log(error);
   }
 };
-startConnect();
+
+start();
