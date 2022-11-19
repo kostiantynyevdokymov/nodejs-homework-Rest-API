@@ -17,8 +17,11 @@ const {
 } = require("../../middlewares/validationMiddlevare");
 
 const { validId } = require("../../middlewares/validationIdMiddleware");
+const { authMiddleware } = require("../../middlewares/authMiddleware");
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 router.get("/", tryCatchWrapper(listContactsController));
 
