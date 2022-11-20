@@ -3,6 +3,7 @@ const logger = require("morgan");
 const cors = require("cors");
 
 const contactsRouter = require("./routes/api/contacts");
+const usersRouter = require("./routes/api/user");
 const { createErrorHandler } = require("./helper/apiHelper");
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/", (res, req) => {
 });
 
 app.use("/api/contacts", contactsRouter);
+app.use("/user", usersRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
