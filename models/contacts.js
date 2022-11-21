@@ -3,49 +3,64 @@
 const { Contact } = require("../db/connectionSchema");
 
 // function get contact list
-const listContacts = async () => {
-  const data = await Contact.find({});
-  return data;
+const listContacts = async (owner, page, limit, favorite) => {
+  console.log(favorite);
+  const skip = (parseInt(page) - 1) * parseInt(limit);
+  if (favorite) {
+    const data = await Contact.find({
+      $and: [{ owner }, { favorite: JSON.parse(favorite) }],
+    })
+      .skip(skip)
+      .limit(parseInt(limit));
+    return data;
+  } else {
+    const data = await Contact.find({ owner })
+      .skip(skip)
+      .limit(parseInt(limit));
+    return data;
+  }
 };
 
 // function get contact by ID
-const getContactById = async (contactId) => {
-  const data = await Contact.findById(contactId);
+const getContactById = async (contactId, owner) => {
+  const data = await Contact.find({ $and: [{ owner }, { _id: contactId }] });
   return data;
 };
 
 // function remove contact
-const removeContact = async (contactId) => {
-  const data = await Contact.findByIdAndRemove(contactId);
+const removeContact = async (contactId, owner) => {
+  const data = await Contact.findOneAndRemove({
+    $and: [{ owner }, { _id: contactId }],
+  });
   return data;
 };
 
 // function add contact;
-const addContact = async (name, email, phone, favorite) => {
-  const contact = new Contact({ name, email, phone, favorite });
+const addContact = async ({ name, email, phone, favorite }, owner) => {
+  const contact = new Contact({ name, email, phone, favorite, owner });
   const newContact = await contact.save();
   return newContact;
 };
 
 // function update contact
-const updateContact = async (contactId, { body }) => {
+const updateContact = async (contactId, owner, body) => {
   await Contact.findByIdAndUpdate(
-    contactId,
+    { $and: [{ owner }, { _id: contactId }] },
     { $set: body },
     { runValidators: true }
   );
-  const updateContact = Contact.findById(contactId);
+  const updateContact = Contact.find({ $and: [{ owner }, { _id: contactId }] });
   return updateContact;
 };
 
 // function update status contact
-const updateStatusContact = async (contactId, favorite) => {
+const updateStatusContact = async (contactId, owner, favorite) => {
   await Contact.findByIdAndUpdate(
-    contactId,
+    { $and: [{ owner }, { _id: contactId }] },
     { favorite },
     { runValidators: true }
   );
-  const updateContact = Contact.findById(contactId);
+  const updateContact = Contact.find({ $and: [{ owner }, { _id: contactId }] });
   return updateContact;
 };
 
