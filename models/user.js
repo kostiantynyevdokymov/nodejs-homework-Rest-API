@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Jimp = require("jimp");
+const fs = require("fs/promises");
+const path = require("path");
 
 const { User } = require("../db/userModel");
 
@@ -34,13 +37,13 @@ const SingInFn = async (email, password) => {
 };
 
 const patchSubscriptionUser = async (id, subscription) => {
-  await User.findByIdAndUpdate(id, { subscription }, { runValidators: true });
-  const updateUser = await User.findById(id).select({
-    email: 1,
-    subscription: 1,
-    _id: 0,
-  });
-  return updateUser;
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    { subscription },
+    { runValidators: true, new: true }
+  ).select({ email: 1, subscription: 1, _id: 0 });
+
+  return updatedUser;
 };
 
 const getCurrentUser = async (id) => {
@@ -52,11 +55,7 @@ const getCurrentUser = async (id) => {
   return data;
 };
 
-const Jimp = require("jimp");
-const fs = require("fs");
-const path = require("path");
-
-const uploadUserAvatar = async (userId, filename, originalUrl) => {
+const uploadUserAvatar = async (userId, filename) => {
   Jimp.read(path.resolve(`./tmp/${filename}`), (err, avatar) => {
     if (err) throw err;
     avatar
