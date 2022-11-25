@@ -1,8 +1,10 @@
+const { User } = require("../db/userModel");
 const {
   singUpFn,
   SingInFn,
   patchSubscriptionUser,
   getCurrentUser,
+  uploadUserAvatar,
 } = require("../models/user");
 
 const singupUserCntr = async (req, res) => {
@@ -35,9 +37,25 @@ const getCurrentUserConrtoller = async (req, res) => {
   res.status(200).json({ status: "success", user });
 };
 
+const logoutUserController = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: null }, { runValidators: true });
+  res.status(200).json({ status: "success logout" });
+};
+
+const patchUserAvatarController = async (req, res) => {
+  const { filename } = req.file;
+  const { _id } = req.file;
+  const { originalUrl } = req;
+  const updatedUser = await uploadUserAvatar(_id, filename, originalUrl);
+  res.status(200).json({ status: "success", user: updatedUser });
+};
+
 module.exports = {
   singupUserCntr,
   SinginUserCntr,
   patchSubscriptionUserController,
   getCurrentUserConrtoller,
+  logoutUserController,
+  patchUserAvatarController,
 };

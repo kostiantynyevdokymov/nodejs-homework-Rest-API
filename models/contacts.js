@@ -4,19 +4,16 @@ const { Contact } = require("../db/connectionSchema");
 
 // function get contact list
 const listContacts = async (owner, page, limit, favorite) => {
-  console.log(favorite);
   const skip = (parseInt(page) - 1) * parseInt(limit);
   if (favorite) {
     const data = await Contact.find({
-      $and: [{ owner }, { favorite: JSON.parse(favorite) }],
+      $and: [{ owner }, { favorite }],
     })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limit);
     return data;
   } else {
-    const data = await Contact.find({ owner })
-      .skip(skip)
-      .limit(parseInt(limit));
+    const data = await Contact.find({ owner }).skip(skip).limit(limit);
     return data;
   }
 };
@@ -44,24 +41,24 @@ const addContact = async ({ name, email, phone, favorite }, owner) => {
 
 // function update contact
 const updateContact = async (contactId, owner, body) => {
-  await Contact.findByIdAndUpdate(
+  const updatedContact = await Contact.findByIdAndUpdate(
     { $and: [{ owner }, { _id: contactId }] },
     { $set: body },
-    { runValidators: true }
+    { runValidators: true, new: true }
   );
-  const updateContact = Contact.find({ $and: [{ owner }, { _id: contactId }] });
-  return updateContact;
+
+  return updatedContact;
 };
 
 // function update status contact
 const updateStatusContact = async (contactId, owner, favorite) => {
-  await Contact.findByIdAndUpdate(
+  const updatedContact = await Contact.findByIdAndUpdate(
     { $and: [{ owner }, { _id: contactId }] },
     { favorite },
-    { runValidators: true }
+    { runValidators: true, new: true }
   );
-  const updateContact = Contact.find({ $and: [{ owner }, { _id: contactId }] });
-  return updateContact;
+
+  return updatedContact;
 };
 
 // exports functions
