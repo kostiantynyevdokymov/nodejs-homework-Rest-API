@@ -3,7 +3,7 @@ const logger = require("morgan");
 const cors = require("cors");
 
 const contactsRouter = require("./routes/api/contacts");
-const usersRouter = require("./routes/api/user");
+const usersRouter = require("./routes/api/users");
 const avatarRouter = require("./routes/api/avatars");
 const { createErrorHandler } = require("./helper/apiHelper");
 const app = express();
@@ -18,8 +18,8 @@ app.get("/", (res, req) => {
   res.send("Database of contact");
 });
 
+app.use("/users", usersRouter);
 app.use("/api/contacts", contactsRouter);
-app.use("/user", usersRouter);
 app.use("/avatars", avatarRouter);
 
 app.use((req, res) => {
