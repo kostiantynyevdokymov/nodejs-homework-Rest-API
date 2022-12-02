@@ -5,6 +5,7 @@ const {
   patchSubscriptionUser,
   getCurrentUser,
   uploadUserAvatar,
+  verificationUser,
 } = require("../models/user");
 
 const singupUserCntr = async (req, res) => {
@@ -50,6 +51,12 @@ const patchUserAvatarController = async (req, res) => {
   res.status(200).json({ status: "success", user: updatedUser });
 };
 
+const verifictationUserController = async (req, res) => {
+  const { verficationToken } = req.params;
+  await verificationUser(verficationToken);
+  res.status(200).json({ message: 'Verification succeful' });
+};
+
 module.exports = {
   singupUserCntr,
   SinginUserCntr,
@@ -57,4 +64,5 @@ module.exports = {
   getCurrentUserConrtoller,
   logoutUserController,
   patchUserAvatarController,
+  verifictationUserController,
 };
