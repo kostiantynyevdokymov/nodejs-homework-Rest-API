@@ -9,20 +9,50 @@ const { User } = require("../db/userModel");
 const {
   RegistrationConflictError,
   LoginAuthentificationError,
+  VerificationError,
+  BadRequestError,
 } = require("../helper/errors");
+
+const { v4: uuidv4 } = require("uuid");
+require("dotenv").config();
+const nodemailer = require("nodemailer");
+
+const config = {
+  host: "smpt.meta.ua",
+  port: 465,
+  secure: true,
+  pool: true,
+  auth: {
+    user: process.env.MAIL_ADDRESS,
+    password: process.env.MAIL_PASSWORD,
+  },
+  tls: { rejectUnauthorized: false },
+};
+const transporter = nodemailer.createTransport(config);
 
 const singUpFn = async (email, password) => {
   if (await User.findOne({ email })) {
     throw new RegistrationConflictError("Email is use");
   }
 
-  const user = new User({ email, password });
+  const verificationToken = uuidv4();
+
+  const user = new User({ email, password, verificationToken });
   await user.save();
+
+  const emailOption = {
+    from: process.env.MAIL_ADDRESS,
+    to: email,
+    subject: "Please verify your email address",
+    text: `Please verify your email address: http://localhost:3001/users/verify/${verificationToken}`,
+  };
+  await transporter.sendMail(emailOption).catch((err) => console.log(err));
+
   return user;
 };
 
 const SingInFn = async (email, password) => {
-  const user = await User.findOne({ email });
+  const user = await User.find({ email, varify: true });
   if (!user) {
     throw new LoginAuthentificationError("Email or password is wrong");
   }
@@ -84,10 +114,47 @@ const uploadUserAvatar = async (userId, filename) => {
   return updatedUser;
 };
 
+const verificationUser = async (verificationToken) => {
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    throw new BadRequestError("Bad request");
+  }
+
+  user.verificationToken = "null";
+  user.verify = true;
+  console.log(user);
+  await user.save();
+
+  const emailOption = {
+    from: process.env.MAIL_ADDRESS,
+    to: user.email,
+    subject: "Thank you for verifycation",
+    text: `Well done. You profile verified.`,
+  };
+  await transporter.sendMail(emailOption).catch((err) => console.log(err));
+};
+
+const repeatedVerificationUser = async (email) => {
+  const user = await User.findOne({ email, verify: false });
+  if (!user) {
+    throw new VerificationError("Not found");
+  }
+  const { verificationToken } = user;
+  const emailOption = {
+    from: process.env.MAIL_ADDRESS,
+    to: email,
+    subject: "Please verify your email address",
+    text: `Please verify your email address: http://localhost:3001/users/verify/${verificationToken}`,
+  };
+  await transporter.sendMail(emailOption).catch((err) => console.log(err));
+};
+
 module.exports = {
   singUpFn,
   SingInFn,
   patchSubscriptionUser,
   getCurrentUser,
   uploadUserAvatar,
+  verificationUser,
+  repeatedVerificationUser,
 };

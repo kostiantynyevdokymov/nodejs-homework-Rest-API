@@ -6,6 +6,8 @@ const {
   logoutUserController,
   patchUserAvatarController,
   getCurrentUserConrtoller,
+  verifictationUserController,
+  repeatedVerificationUserController,
 } = require("../../controller/userController");
 
 const { tryCatchWrapper } = require("../../helper/apiHelper");
@@ -16,6 +18,9 @@ const {
 const {
   loginValidation,
 } = require("../../middlewares/validationLoginMiddleware");
+const {
+  repeatedVerificationUserValidation,
+} = require("../../middlewares/validationMiddlevare");
 
 const router = express.Router();
 
@@ -38,6 +43,12 @@ router.patch(
 );
 router.get("/avatars/:avatarId", express.static("../../public/avatars"));
 
+router.post(
+  "/verify/",
+  repeatedVerificationUserValidation,
+  tryCatchWrapper(repeatedVerificationUserController)
+);
+router.get("/verify/:verificationToken", verifictationUserController);
 router.patch(
   "/avatars",
   authMiddleware,

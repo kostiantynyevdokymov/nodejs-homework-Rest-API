@@ -1,6 +1,7 @@
 const {
   RegistrationConflictError,
   LoginAuthentificationError,
+  VerificationError,
 } = require("./errors");
 
 const tryCatchWrapper = (controller) => {
@@ -12,7 +13,8 @@ const tryCatchWrapper = (controller) => {
 const createErrorHandler = (err, req, res, next) => {
   if (
     err instanceof RegistrationConflictError ||
-    err instanceof LoginAuthentificationError
+    err instanceof LoginAuthentificationError ||
+    err instanceof VerificationError
   ) {
     return res.status(err.status).json({ message: err.message });
   }

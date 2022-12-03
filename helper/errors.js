@@ -12,4 +12,23 @@ class LoginAuthentificationError extends Error {
   }
 }
 
-module.exports = { RegistrationConflictError, LoginAuthentificationError };
+class VerificationError extends Error {
+  constructor(message) {
+    super(message);
+    this.status = 404;
+  }
+}
+
+class BadRequestError extends Error {
+  constructor(message) {
+    super(message);
+    this.status = 400;
+  }
+}
+
+module.exports = {
+  RegistrationConflictError,
+  LoginAuthentificationError,
+  VerificationError,
+  BadRequestError,
+};

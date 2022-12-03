@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // eslint-disable-next-line no-unused-vars
-    const [filename, extension] = file.originalname.split(".");
+    const [, extension] = file.originalname.split(".");
     cb(null, `${uuidv4()}.${extension}`);
   },
 });
